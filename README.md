@@ -219,6 +219,7 @@ print('Sample chunk:\n', chunks[0][:300] if chunks else 'EMPTY')
 * تعدادشان را چاپ می‌کند
 * اگر چانک وجود داشت ۳۰۰ کاراکتر اول چانک اول را نشان می‌دهد
 </div>
+
 ## ✅ سلول 7 — embedding گرفتن از چانک‌ها
 
 ```python
