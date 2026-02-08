@@ -15,7 +15,7 @@
 7) جواب را با gTTS صوتی می‌کند  
 8) همه را داخل یک رابط Gradio نشان می‌دهد  
 
----
+
 
 ## ✅ سلول 0 — نصب پکیج‌ها + بررسی Torch/GPU
 
@@ -33,7 +33,7 @@
 
 > `-q` یعنی خروجی نصب کم‌حرف‌تر باشد.
 </div>
----
+
 
 ```python
 import torch
@@ -46,7 +46,7 @@ print('cuda available:', torch.cuda.is_available())
 * بررسی می‌کند آیا CUDA (GPU) در دسترس است یا نه
 </div>
 
----
+
 
 ## ✅ سلول 2 — ایمپورت‌ها و انتخاب دستگاه (CPU/GPU)
 
@@ -64,7 +64,7 @@ from dataclasses import dataclass
 * `faiss`: ساخت index و جستجوی شباهت
 * `dataclass`: ایمپورت شده ولی استفاده نشده (می‌تواند حذف شود)
 </div>
----
+
 
 ```python
 from sentence_transformers import SentenceTransformer
@@ -84,7 +84,7 @@ import gradio as gr
 * `gTTS`: متن → mp3
 * `gradio`: UI
 </div>
----
+
 
 ```python
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -94,7 +94,7 @@ print('DEVICE:', DEVICE)
 * اگر GPU باشد روی `cuda` می‌رود وگرنه `cpu`
 * دستگاه انتخابی را چاپ می‌کند
 
----
+
 
 ## ✅ سلول 3 — متن سند + تابع خواندن فایل txt
 
@@ -108,7 +108,7 @@ DOCUMENT_TEXT = """
 * فعلاً خالی است
 * `.strip()` فاصله‌های ابتدا/انتها را حذف می‌کند
 </div>
----
+
 
 ```python
 def load_txt_from_path(path: str) -> str:
@@ -119,7 +119,7 @@ def load_txt_from_path(path: str) -> str:
 * تابع ساده برای خواندن فایل متنی UTF-8
 * `with open(...)` یعنی فایل بعد از خواندن خودکار بسته می‌شود
 </div>
----
+
 
 ```python
 print('Document chars:', len(DOCUMENT_TEXT))
@@ -127,7 +127,7 @@ print('Document chars:', len(DOCUMENT_TEXT))
 <div dir="rtl" style="text-align: right;">
 * تعداد کاراکترهای سند فعلی را چاپ می‌کند (اینجا احتمالاً 0)
 </div>
----
+
 
 ## ✅ سلول 5 — نرمال‌سازی متن + چانک‌کردن
 
@@ -144,7 +144,7 @@ def normalize_text(text: str) -> str:
 * `re.sub(r"\s+", " ", text)`: هر تعداد whitespace (فاصله/خط جدید/تب) → یک فاصله
 * `strip()`: حذف فاصله‌های ابتدا و انتها
 </div>
----
+
 
 ### 2) چانک‌کردن متن
 
@@ -159,7 +159,7 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
 * `chunk_size`: طول هر تکه
 * `overlap`: همپوشانی بین تکه‌ها (برای اینکه مطالب مرزی از دست نروند)
 </div>
----
+
 
 ```python
     text = normalize_text(text)
@@ -170,7 +170,7 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
 * ابتدا متن را نرمال می‌کند
 * اگر خالی بود لیست خالی برمی‌گرداند
 </div>
----
+
 
 ```python
     chunks = []
@@ -186,7 +186,7 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
 * `min` برای اینکه از طول متن جلوتر نرود
 * اگر تکه خالی نبود به لیست اضافه می‌کند
 </div>
----
+
 
 ```python
         start = end - overlap
@@ -200,7 +200,6 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
 * اگر منفی شد صفر می‌کند
 * اگر به انتهای متن رسیدیم، حلقه تمام می‌شود
 </div>
----
 
 ```python
     return chunks
@@ -208,7 +207,7 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
 
 * خروجی: لیست چانک‌ها
 
----
+
 
 ```python
 chunks = chunk_text(DOCUMENT_TEXT, chunk_size=450, overlap=80)
@@ -220,8 +219,6 @@ print('Sample chunk:\n', chunks[0][:300] if chunks else 'EMPTY')
 * تعدادشان را چاپ می‌کند
 * اگر چانک وجود داشت ۳۰۰ کاراکتر اول چانک اول را نشان می‌دهد
 </div>
----
-
 ## ✅ سلول 7 — embedding گرفتن از چانک‌ها
 
 ```python
@@ -232,7 +229,7 @@ embedder = SentenceTransformer(EMBED_MODEL_NAME)
 * اسم مدل embedding چندزبانه (برای فارسی هم مناسب)
 * مدل را لود می‌کند
 </div>
----
+
 
 ```python
 def embed_texts(texts):
@@ -246,7 +243,7 @@ def embed_texts(texts):
 * `normalize_embeddings=True`: نرمال‌سازی بردارها (برای شباهت بهتر)
 * `astype('float32')`: FAISS معمولاً float32 دوست دارد
 </div>
----
+
 
 ```python
 chunk_embeddings = embed_texts(chunks) if chunks else np.zeros((0, 384), dtype='float32')
@@ -258,7 +255,7 @@ print('Embeddings shape:', chunk_embeddings.shape)
 * اگر نداریم آرایه خالی با شکل `(0, 384)` می‌سازد (۳۸۴ ابعاد این مدل است)
 * شکل embeddingها را چاپ می‌کند
 </div>
----
+
 
 ## ✅ سلول 8 — ساخت ایندکس FAISS
 
@@ -270,7 +267,7 @@ def build_faiss_index(embeddings: np.ndarray):
 
 * اگر embedding خالی باشد، index ساخته نمی‌شود
 
----
+
 
 ```python
     dim = embeddings.shape[1]
@@ -284,7 +281,7 @@ def build_faiss_index(embeddings: np.ndarray):
   چون embeddingها نرمال شده‌اند، `inner product ≈ cosine similarity`
 * `add`: همه embeddingها را وارد ایندکس می‌کند
 </div>
----
+
 
 ```python
 index = build_faiss_index(chunk_embeddings)
@@ -293,7 +290,7 @@ print('FAISS index ready:', index is not None)
 
 * ایندکس ساخته می‌شود و آماده بودنش چاپ می‌شود
 
----
+
 
 ## ✅ سلول 10 — بازیابی Top-k چانک‌های مرتبط
 
@@ -305,7 +302,7 @@ def retrieve_top_k(query: str, k: int = 4):
 
 * اگر ایندکس/چانک نداریم، خروجی خالی
 
----
+
 
 ```python
     q_emb = embed_texts([query])
@@ -318,7 +315,7 @@ def retrieve_top_k(query: str, k: int = 4):
   * `ids`: اندیس چانک‌ها
   * `scores`: امتیاز شباهت
 </div>
----
+
 
 ```python
     ids = ids[0].tolist()
@@ -327,7 +324,7 @@ def retrieve_top_k(query: str, k: int = 4):
 <div dir="rtl" style="text-align: right;">
 * چون خروجی دوبعدی است (batch)، سطر اول را می‌گیرد و به لیست تبدیل می‌کند
 </div>
----
+
 
 ```python
     results = []
@@ -341,7 +338,7 @@ def retrieve_top_k(query: str, k: int = 4):
 * اگر `-1` بود نتیجه نامعتبر است
 * خروجی هر نتیجه: `(متن چانک، امتیاز، اندیس)`
 </div>
----
+
 
 ```python
 test_q = "موضوع سند چیست؟"
@@ -350,7 +347,7 @@ print(retrieve_top_k(test_q, k=3)[:1])
 <div dir="rtl" style="text-align: right;">
 * تست: سوال می‌پرسد و ۱ نتیجه اول را چاپ می‌کند
 </div>
----
+
 <div dir="rtl" style="text-align: right;">
 ## ✅ سلول 12 — ساخت prompt برای مدل زبانی
 
@@ -363,7 +360,7 @@ def build_prompt(context_chunks, question: str) -> str:
 
 * چانک‌های انتخاب‌شده را شماره‌گذاری و یکپارچه می‌کند
 
----
+
 
 ```python
     prompt = f"""
@@ -388,7 +385,7 @@ ANSWER (in Persian):
 * قانون مهم: فقط از `CONTEXT` استفاده کن؛ اگر نبود دقیقاً همان جمله را بگو
 
 </div>
----
+
 
 ```python
     return prompt
@@ -396,7 +393,7 @@ ANSWER (in Persian):
 <div dir="rtl" style="text-align: right;">
 * prompt نهایی برمی‌گردد
 </div>
----
+
 
 ## ✅ سلول 14 — لود مدل تولید پاسخ + تولید پاسخ
 
@@ -412,7 +409,6 @@ model.to(DEVICE)
 * روی CPU یا GPU می‌برد
 </div>
 
----
 
 ```python
 def generate_answer(prompt: str, max_new_tokens: int = 180):
@@ -424,7 +420,7 @@ def generate_answer(prompt: str, max_new_tokens: int = 180):
 * `max_length=1024`: سقف طول ورودی
 * داده‌ها را روی `DEVICE` می‌برد
 </div>
----
+
 
 ```python
     with torch.no_grad():
@@ -443,7 +439,7 @@ def generate_answer(prompt: str, max_new_tokens: int = 180):
   * `num_beams=4`: beam search برای جواب بهتر
   * `do_sample=False`: تصادفی نیست (پایدارتر)
 </div>
----
+
 
 ```python
     text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
@@ -452,7 +448,7 @@ def generate_answer(prompt: str, max_new_tokens: int = 180):
 
 * تبدیل خروجی توکن‌ها به متن و برگشت دادن جواب
 
----
+
 
 ### تست سریع
 
@@ -470,7 +466,7 @@ else:
 * اگر سند داریم: retrieval → prompt → جواب چاپ می‌شود
 * اگر نداریم: پیام سند خالی است
 </div>
----
+
 
 ## ✅ سلول 16 — متن به صدا (TTS)
 
@@ -480,7 +476,7 @@ from gtts import gTTS
 
 * ایمپورت تکراری (اشکالی ندارد)
 
----
+
 
 ```python
 def text_to_speech(text, out_path="answer.mp3", lang="en"):
@@ -492,7 +488,7 @@ def text_to_speech(text, out_path="answer.mp3", lang="en"):
 * متن را امن می‌کند (اگر `None` بود، رشته خالی)
 * اگر خالی بود `None` برمی‌گرداند
 </div>
----
+
 
 ```python
     gTTS(text=text, lang=lang).save(out_path)
@@ -503,7 +499,7 @@ def text_to_speech(text, out_path="answer.mp3", lang="en"):
 
 > ⚠️ نکته: `lang="en"` است؛ اگر جواب فارسی است بهتر است `"fa"` باشد.
 </div>
----
+
 
 ## ✅ سلول 18 — تابع اصلی RAG
 
@@ -515,7 +511,7 @@ def rag_answer(question: str, top_k: int = 4):
 <div dir="rtl" style="text-align: right;">
 * اگر سند/چانک نداریم: پیام خطا + لیست خالی
 </div>
----
+
 
 ```python
     retrieved = retrieve_top_k(question, k=top_k)
@@ -532,7 +528,7 @@ def rag_answer(question: str, top_k: int = 4):
 * جواب تولید می‌کند
 * خروجی: `(answer, retrieved_details)`
 </div>
----
+
 
 ## ✅ سلول 20 — بازسازی pipeline + رابط Gradio
 
@@ -545,7 +541,7 @@ def rebuild_pipeline_with_new_doc(doc_text: str, chunk_size: int = 450, overlap:
 
 * چون می‌خواهد متغیرهای سراسری را تغییر دهد، `global` می‌گذارد
 
----
+
 
 ```python
     DOCUMENT_TEXT = (doc_text or "").strip()
@@ -555,7 +551,7 @@ def rebuild_pipeline_with_new_doc(doc_text: str, chunk_size: int = 450, overlap:
 * متن سند را ذخیره می‌کند
 * چانک می‌کند
 
----
+
 
 ```python
     if chunks:
@@ -571,7 +567,7 @@ def rebuild_pipeline_with_new_doc(doc_text: str, chunk_size: int = 450, overlap:
 * اگر نیست: همه چیز خالی
 * پیام وضعیت برمی‌گرداند
 </div>
----
+
 
 ### 2) خواندن فایل آپلودی Gradio
 
@@ -604,7 +600,7 @@ def read_uploaded_file(file_obj):
         return f.read()
 ```
 
----
+
 <div dir="rtl" style="text-align: right;">
 ### 3) تابع چت (ورودی کاربر → جواب + سورس‌ها + صوت)
 </div>
@@ -622,7 +618,7 @@ def chat_fn(message, history, top_k, chunk_size, overlap):
   3. audio (هیچی)
 
 </div>
----
+
 
 ```python
     answer, retrieved = rag_answer(message, top_k=int(top_k))
@@ -631,7 +627,7 @@ def chat_fn(message, history, top_k, chunk_size, overlap):
 * جواب RAG
 * تمیزکاری
 
----
+
 
 ```python
     if not answer:
@@ -640,7 +636,7 @@ def chat_fn(message, history, top_k, chunk_size, overlap):
 
 * اگر خالی بود پیام fallback می‌دهد
 
----
+
 
 ```python
     audio_path = text_to_speech(answer, out_path="answer.mp3", lang="en")
@@ -650,7 +646,7 @@ def chat_fn(message, history, top_k, chunk_size, overlap):
 
 > بهتر: `lang="fa"` اگر فارسی است
 
----
+
 
 ```python
     sources_md = "\n\n".join([
@@ -661,7 +657,7 @@ def chat_fn(message, history, top_k, chunk_size, overlap):
 
 * چانک‌های بازیابی‌شده را به markdown تبدیل می‌کند (تا ۷۰۰ کاراکتر از هر چانک)
 
----
+
 
 ```python
     history = (history or []) + [(message, answer)]
@@ -670,7 +666,7 @@ def chat_fn(message, history, top_k, chunk_size, overlap):
 
 * history را آپدیت می‌کند و خروجی‌ها را برمی‌گرداند
 
----
+
 
 ### 4) ساخت UI با Gradio
 
@@ -698,7 +694,6 @@ with gr.Blocks() as demo:
 * `sources = gr.Markdown(...)`
 * `audio = gr.Audio(..., type="filepath")`
 
----
 
 ### 5) تابع `on_load` (وقتی paste/file/slider تغییر کند)
 
@@ -711,10 +706,10 @@ def on_load(doc_text, file_obj, chunk_size, overlap):
   else:
       chosen_text = ""
 ```
-
+<div dir="rtl" style="text-align: right;">
 * اولویت با paste است؛ اگر خالی بود از فایل می‌خواند
+</div>
 
----
 
 ```python
   if not (chosen_text and chosen_text.strip()):
@@ -725,7 +720,7 @@ def on_load(doc_text, file_obj, chunk_size, overlap):
 * اگر سند خالی بود پیام می‌دهد
 * وگرنه ایندکس را می‌سازد
 
----
+
 
 ### 6) اتصال رویدادها (Event Handlers)
 
@@ -739,7 +734,6 @@ overlap.change(on_load, ...)
 
 * با هر تغییر، ایندکس دوباره ساخته می‌شود
 
----
 
 **ارسال پیام چت:**
 
@@ -747,11 +741,11 @@ overlap.change(on_load, ...)
 msg.submit(chat_fn, inputs=[msg, chatbot, top_k, chunk_size, overlap], outputs=[chatbot, sources, audio])
 msg.submit(lambda: "", None, msg)
 ```
-
+<div dir="rtl" style="text-align: right;">
 * submit اول: جواب را می‌گیرد
 * submit دوم: textbox پیام را خالی می‌کند
+</div>
 
----
 
 ### اجرای اپ
 
@@ -762,21 +756,3 @@ demo.launch(share=True, debug=True)
 * اپ را اجرا می‌کند
 * `share=True`: لینک عمومی موقت می‌دهد
 * `debug=True`: خطاها را دقیق‌تر چاپ می‌کند
-
----
-
-## 🧩 نکته‌های بهبود پیشنهادی
-
-* اگر پاسخ‌ها فارسی هستند، در تابع TTS بهتر است:
-
-  * `lang="fa"` قرار داده شود.
-* اگر متن سند خیلی بزرگ است:
-
-  * `chunk_size` و `top_k` را با توجه به کیفیت پاسخ تنظیم کنید.
-
----
-
-</div>
-```
-
-اگر خواستی، همین README رو هم برات تبدیل می‌کنم به نسخه‌ی «حرفه‌ای‌تر» با بخش‌های **Features، Requirements، Quick Start، Troubleshooting، و FAQ** (ولی همین نسخه برای قرار دادن متن فعلی خیلی تمیز و خواناست).
