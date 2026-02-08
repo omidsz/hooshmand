@@ -1,6 +1,3 @@
-حتماً — این متن رو برات به شکل یک **README.md خوش‌فرمت، فارسی‌خوان، با تیترها، کادرهای نکته، و کدبلاک‌های مرتب** آماده کردم. فقط کافیه عیناً کپی کنی داخل فایل `README.md`.
-
-> نکته: من داخل README از تنظیم `dir="rtl"` در HTML استفاده کردم تا در GitHub هم راست‌به‌چپ بهتر نمایش داده بشه (GitHub داخل Markdown اجازه‌ی HTML ساده رو می‌ده).
 
 ````markdown
 <div dir="rtl">
@@ -29,7 +26,7 @@
 ````
 
 **این سلول پکیج‌های لازم را نصب می‌کند:**
-
+<div dir="rtl" style="text-align: right;">
 * `faiss-cpu`: جستجوی برداری سریع (Vector Search) روی CPU
 * `sentence-transformers`: ساخت embedding برای متن
 * `transformers`, `accelerate`: اجرای مدل‌های HuggingFace
@@ -37,7 +34,7 @@
 * `gTTS`: تبدیل متن به صدا با Google Text-to-Speech
 
 > `-q` یعنی خروجی نصب کم‌حرف‌تر باشد.
-
+</div>
 ---
 
 ```python
@@ -45,10 +42,11 @@ import torch
 print('torch:', torch.__version__)
 print('cuda available:', torch.cuda.is_available())
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `torch` را وارد می‌کند
 * نسخه‌ی Torch را چاپ می‌کند
 * بررسی می‌کند آیا CUDA (GPU) در دسترس است یا نه
+</div>
 
 ---
 
@@ -61,13 +59,13 @@ import numpy as np
 import faiss
 from dataclasses import dataclass
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `os`: کار با مسیرها/فایل‌ها (اینجا خیلی استفاده نشده)
 * `re`: regex برای پاکسازی متن
 * `numpy`: آرایه‌های عددی (embeddingها)
 * `faiss`: ساخت index و جستجوی شباهت
 * `dataclass`: ایمپورت شده ولی استفاده نشده (می‌تواند حذف شود)
-
+</div>
 ---
 
 ```python
