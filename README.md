@@ -1,6 +1,4 @@
-
 ````markdown
-<div dir="rtl">
 
 # 📚 RAG QA + TTS (سندمحور) — توضیح خط‌به‌خط نوت‌بوک
 
@@ -73,21 +71,19 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `SentenceTransformer`: مدل embedding
 * `AutoTokenizer` و `AutoModelForSeq2SeqLM`: توکنایزر و مدل تولید متن (seq2seq)
 * دوباره `torch` ایمپورت شده (تکراری است ولی مشکلی ایجاد نمی‌کند)
-
----
-
+</div>
 ```python
 from gtts import gTTS
 import gradio as gr
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `gTTS`: متن → mp3
 * `gradio`: UI
-
+</div>
 ---
 
 ```python
@@ -106,11 +102,12 @@ print('DEVICE:', DEVICE)
 DOCUMENT_TEXT = """
 """.strip()
 ```
+<div dir="rtl" style="text-align: right;">
 
 * متغیر اصلی سند
 * فعلاً خالی است
 * `.strip()` فاصله‌های ابتدا/انتها را حذف می‌کند
-
+</div>
 ---
 
 ```python
@@ -118,18 +115,18 @@ def load_txt_from_path(path: str) -> str:
     with open(path, 'r', encoding='utf-8') as f:
         return f.read()
 ```
-
+<div dir="rtl" style="text-align: right;">
 * تابع ساده برای خواندن فایل متنی UTF-8
 * `with open(...)` یعنی فایل بعد از خواندن خودکار بسته می‌شود
-
+</div>
 ---
 
 ```python
 print('Document chars:', len(DOCUMENT_TEXT))
 ```
-
+<div dir="rtl" style="text-align: right;">
 * تعداد کاراکترهای سند فعلی را چاپ می‌کند (اینجا احتمالاً 0)
-
+</div>
 ---
 
 ## ✅ سلول 5 — نرمال‌سازی متن + چانک‌کردن
@@ -142,11 +139,11 @@ def normalize_text(text: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
     return text
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `\u200c` همان **نیم‌فاصله (ZWNJ)** است؛ آن را به فاصله تبدیل می‌کند تا متن یکنواخت شود
 * `re.sub(r"\s+", " ", text)`: هر تعداد whitespace (فاصله/خط جدید/تب) → یک فاصله
 * `strip()`: حذف فاصله‌های ابتدا و انتها
-
+</div>
 ---
 
 ### 2) چانک‌کردن متن
@@ -157,11 +154,11 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
     chunk_size و overlap قابل تغییر هستند
     """
 ```
-
+<div dir="rtl" style="text-align: right;">
 * تکه‌تکه کردن متن بر اساس **تعداد کاراکتر**
 * `chunk_size`: طول هر تکه
 * `overlap`: همپوشانی بین تکه‌ها (برای اینکه مطالب مرزی از دست نروند)
-
+</div>
 ---
 
 ```python
@@ -169,10 +166,10 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
     if not text:
         return []
 ```
-
+<div dir="rtl" style="text-align: right;">
 * ابتدا متن را نرمال می‌کند
 * اگر خالی بود لیست خالی برمی‌گرداند
-
+</div>
 ---
 
 ```python
@@ -184,11 +181,11 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
         if chunk:
             chunks.append(chunk)
 ```
-
+<div dir="rtl" style="text-align: right;">
 * از `start` تا `end` یک برش می‌گیرد
 * `min` برای اینکه از طول متن جلوتر نرود
 * اگر تکه خالی نبود به لیست اضافه می‌کند
-
+</div>
 ---
 
 ```python
@@ -198,11 +195,11 @@ def chunk_text(text: str, chunk_size: int = 450, overlap: int = 80):
         if end == len(text):
             break
 ```
-
+<div dir="rtl" style="text-align: right;">
 * برای چانک بعدی، `start` را عقب‌تر می‌برد تا overlap ایجاد شود
 * اگر منفی شد صفر می‌کند
 * اگر به انتهای متن رسیدیم، حلقه تمام می‌شود
-
+</div>
 ---
 
 ```python
@@ -218,11 +215,11 @@ chunks = chunk_text(DOCUMENT_TEXT, chunk_size=450, overlap=80)
 print('Num chunks:', len(chunks))
 print('Sample chunk:\n', chunks[0][:300] if chunks else 'EMPTY')
 ```
-
+<div dir="rtl" style="text-align: right;">
 * چانک‌های سند فعلی را می‌سازد
 * تعدادشان را چاپ می‌کند
 * اگر چانک وجود داشت ۳۰۰ کاراکتر اول چانک اول را نشان می‌دهد
-
+</div>
 ---
 
 ## ✅ سلول 7 — embedding گرفتن از چانک‌ها
@@ -231,10 +228,10 @@ print('Sample chunk:\n', chunks[0][:300] if chunks else 'EMPTY')
 EMBED_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 embedder = SentenceTransformer(EMBED_MODEL_NAME)
 ```
-
+<div dir="rtl" style="text-align: right;">
 * اسم مدل embedding چندزبانه (برای فارسی هم مناسب)
 * مدل را لود می‌کند
-
+</div>
 ---
 
 ```python
