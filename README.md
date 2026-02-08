@@ -239,24 +239,25 @@ def embed_texts(texts):
     vecs = embedder.encode(texts, convert_to_numpy=True, show_progress_bar=True, normalize_embeddings=True)
     return vecs.astype('float32')
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `encode`: متن‌ها را به بردار تبدیل می‌کند
 * `convert_to_numpy=True`: خروجی numpy array
 * `show_progress_bar=True`: نمایش نوار پیشرفت
 * `normalize_embeddings=True`: نرمال‌سازی بردارها (برای شباهت بهتر)
 * `astype('float32')`: FAISS معمولاً float32 دوست دارد
-
+</div>
 ---
 
 ```python
 chunk_embeddings = embed_texts(chunks) if chunks else np.zeros((0, 384), dtype='float32')
 print('Embeddings shape:', chunk_embeddings.shape)
 ```
+<div dir="rtl" style="text-align: right;">
 
 * اگر چانک داریم embedding می‌گیرد
 * اگر نداریم آرایه خالی با شکل `(0, 384)` می‌سازد (۳۸۴ ابعاد این مدل است)
 * شکل embeddingها را چاپ می‌کند
-
+</div>
 ---
 
 ## ✅ سلول 8 — ساخت ایندکس FAISS
@@ -277,12 +278,12 @@ def build_faiss_index(embeddings: np.ndarray):
     index.add(embeddings)
     return index
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `dim`: تعداد ابعاد بردار
 * `IndexFlatIP`: ایندکس ساده با معیار **Inner Product**
   چون embeddingها نرمال شده‌اند، `inner product ≈ cosine similarity`
 * `add`: همه embeddingها را وارد ایندکس می‌کند
-
+</div>
 ---
 
 ```python
@@ -310,22 +311,22 @@ def retrieve_top_k(query: str, k: int = 4):
     q_emb = embed_texts([query])
     scores, ids = index.search(q_emb, k)
 ```
-
+<div dir="rtl" style="text-align: right;">
 * embedding سوال را می‌سازد (یک سوال → یک بردار)
 * `search`: نزدیک‌ترین `k` بردار را می‌دهد
 
   * `ids`: اندیس چانک‌ها
   * `scores`: امتیاز شباهت
-
+</div>
 ---
 
 ```python
     ids = ids[0].tolist()
     scores = scores[0].tolist()
 ```
-
+<div dir="rtl" style="text-align: right;">
 * چون خروجی دوبعدی است (batch)، سطر اول را می‌گیرد و به لیست تبدیل می‌کند
-
+</div>
 ---
 
 ```python
@@ -336,22 +337,24 @@ def retrieve_top_k(query: str, k: int = 4):
         results.append((chunks[i], float(s), i))
     return results
 ```
-
+<div dir="rtl" style="text-align: right;">
 * اگر `-1` بود نتیجه نامعتبر است
 * خروجی هر نتیجه: `(متن چانک، امتیاز، اندیس)`
-
+</div>
 ---
 
 ```python
 test_q = "موضوع سند چیست؟"
 print(retrieve_top_k(test_q, k=3)[:1])
 ```
-
+<div dir="rtl" style="text-align: right;">
 * تست: سوال می‌پرسد و ۱ نتیجه اول را چاپ می‌کند
-
+</div>
 ---
-
+<div dir="rtl" style="text-align: right;">
 ## ✅ سلول 12 — ساخت prompt برای مدل زبانی
+
+</div>
 
 ```python
 def build_prompt(context_chunks, question: str) -> str:
@@ -380,18 +383,19 @@ QUESTION:
 ANSWER (in Persian):
 """.strip()
 ```
-
+<div dir="rtl" style="text-align: right;">
 * prompt انگلیسی است ولی می‌گوید جواب **فارسی** باشد
 * قانون مهم: فقط از `CONTEXT` استفاده کن؛ اگر نبود دقیقاً همان جمله را بگو
 
+</div>
 ---
 
 ```python
     return prompt
 ```
-
+<div dir="rtl" style="text-align: right;">
 * prompt نهایی برمی‌گردد
-
+</div>
 ---
 
 ## ✅ سلول 14 — لود مدل تولید پاسخ + تولید پاسخ
@@ -402,10 +406,11 @@ tokenizer = AutoTokenizer.from_pretrained(LLM_NAME)
 model = AutoModelForSeq2SeqLM.from_pretrained(LLM_NAME)
 model.to(DEVICE)
 ```
-
+<div dir="rtl" style="text-align: right;">
 * مدل سبک `flan-t5-small` را لود می‌کند
 * توکنایزر و مدل را می‌سازد
 * روی CPU یا GPU می‌برد
+</div>
 
 ---
 
@@ -413,12 +418,12 @@ model.to(DEVICE)
 def generate_answer(prompt: str, max_new_tokens: int = 180):
     inputs = tokenizer(prompt, return_tensors='pt', truncation=True, max_length=1024).to(DEVICE)
 ```
-
+<div dir="rtl" style="text-align: right;">
 * prompt را توکنایز می‌کند
 * `truncation=True`: اگر طولانی شد قطع کند
 * `max_length=1024`: سقف طول ورودی
 * داده‌ها را روی `DEVICE` می‌برد
-
+</div>
 ---
 
 ```python
@@ -430,14 +435,14 @@ def generate_answer(prompt: str, max_new_tokens: int = 180):
             do_sample=False,
         )
 ```
-
+<div dir="rtl" style="text-align: right;">
 * `no_grad`: inference بدون محاسبه گرادیان
 * `generate`:
 
   * `max_new_tokens`: حداکثر طول جواب
   * `num_beams=4`: beam search برای جواب بهتر
   * `do_sample=False`: تصادفی نیست (پایدارتر)
-
+</div>
 ---
 
 ```python
@@ -460,10 +465,11 @@ if chunks:
 else:
     print('Document is empty. Paste or upload a .txt first.')
 ```
+<div dir="rtl" style="text-align: right;">
 
 * اگر سند داریم: retrieval → prompt → جواب چاپ می‌شود
 * اگر نداریم: پیام سند خالی است
-
+</div>
 ---
 
 ## ✅ سلول 16 — متن به صدا (TTS)
@@ -482,21 +488,21 @@ def text_to_speech(text, out_path="answer.mp3", lang="en"):
     if not text:
         return None
 ```
-
+<div dir="rtl" style="text-align: right;">
 * متن را امن می‌کند (اگر `None` بود، رشته خالی)
 * اگر خالی بود `None` برمی‌گرداند
-
+</div>
 ---
 
 ```python
     gTTS(text=text, lang=lang).save(out_path)
     return out_path
 ```
-
+<div dir="rtl" style="text-align: right;">
 * با gTTS فایل mp3 می‌سازد و مسیرش را برمی‌گرداند
 
 > ⚠️ نکته: `lang="en"` است؛ اگر جواب فارسی است بهتر است `"fa"` باشد.
-
+</div>
 ---
 
 ## ✅ سلول 18 — تابع اصلی RAG
@@ -506,9 +512,9 @@ def rag_answer(question: str, top_k: int = 4):
     if not DOCUMENT_TEXT.strip() or not chunks:
         return "ابتدا متن سند را وارد کنید (Paste یا فایل .txt).", []
 ```
-
+<div dir="rtl" style="text-align: right;">
 * اگر سند/چانک نداریم: پیام خطا + لیست خالی
-
+</div>
 ---
 
 ```python
@@ -518,13 +524,14 @@ def rag_answer(question: str, top_k: int = 4):
     answer = generate_answer(prompt)
     return answer, retrieved
 ```
+<div dir="rtl" style="text-align: right;">
 
 * retrieval انجام می‌دهد
 * فقط متن چانک‌ها را جدا می‌کند
 * prompt می‌سازد
 * جواب تولید می‌کند
 * خروجی: `(answer, retrieved_details)`
-
+</div>
 ---
 
 ## ✅ سلول 20 — بازسازی pipeline + رابط Gradio
@@ -559,11 +566,11 @@ def rebuild_pipeline_with_new_doc(doc_text: str, chunk_size: int = 450, overlap:
         index = None
     return f"✅ سند بارگذاری شد. تعداد chunk: {len(chunks)}"
 ```
-
+<div dir="rtl" style="text-align: right;">
 * اگر چانک هست: embedding → index
 * اگر نیست: همه چیز خالی
 * پیام وضعیت برمی‌گرداند
-
+</div>
 ---
 
 ### 2) خواندن فایل آپلودی Gradio
@@ -573,8 +580,9 @@ def read_uploaded_file(file_obj):
     if file_obj is None:
         return ""
 ```
-
+<div dir="rtl" style="text-align: right;">
 سپس نوع‌های مختلفی که Gradio ممکن است برگرداند را پوشش می‌دهد:
+</div>
 
 ```python
     if isinstance(file_obj, str):
@@ -597,28 +605,29 @@ def read_uploaded_file(file_obj):
 ```
 
 ---
-
+<div dir="rtl" style="text-align: right;">
 ### 3) تابع چت (ورودی کاربر → جواب + سورس‌ها + صوت)
+</div>
 
 ```python
 def chat_fn(message, history, top_k, chunk_size, overlap):
     if not (DOCUMENT_TEXT and DOCUMENT_TEXT.strip()):
         return (history or []), "❌ ابتدا سند را وارد کنید.", None
 ```
-
+<div dir="rtl" style="text-align: right;">
 * اگر سند نیست، ۳ خروجی می‌دهد چون UI سه خروجی دارد:
 
   1. history چت
   2. markdown سورس‌ها
   3. audio (هیچی)
 
+</div>
 ---
 
 ```python
     answer, retrieved = rag_answer(message, top_k=int(top_k))
     answer = (answer or "").strip()
 ```
-
 * جواب RAG
 * تمیزکاری
 
