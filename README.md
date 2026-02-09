@@ -833,32 +833,6 @@ num_beams: int = 4
 
 نویز بیشتر: overlap زیاد یا top_k زیاد بدون فیلتر مناسب
 
-توصیه‌های تنظیم:
-برای دقت بالا:
-
-chunk_size: 300-400
-
-overlap: 50-80
-
-top_k: 3-4
-
-برای سرعت بالا:
-
-chunk_size: 500-600
-
-top_k: 2-3
-
-num_beams: 2
-
-برای تعادل مناسب:
-
-chunk_size: 450
-
-overlap: 80
-
-top_k: 4
-
-num_beams: 4
 
 
 
