@@ -17,7 +17,7 @@
 </div>
 
 
-## ✅ سلول 0 — نصب پکیج‌ها + بررسی Torch/GPU
+## ✅ سلول 1 — نصب پکیج‌ها + بررسی Torch/GPU
 
 ```python
 !pip -q install faiss-cpu sentence-transformers transformers accelerate gradio gTTS
@@ -129,7 +129,7 @@ print('Document chars:', len(DOCUMENT_TEXT))
 </div>
 
 
-## ✅ سلول 5 — نرمال‌سازی متن + چانک‌کردن
+## ✅ سلول 4 — نرمال‌سازی متن + چانک‌کردن
 
 ### 1) نرمال‌سازی متن
 
@@ -220,7 +220,7 @@ print('Sample chunk:\n', chunks[0][:300] if chunks else 'EMPTY')
 * اگر چانک وجود داشت ۳۰۰ کاراکتر اول چانک اول را نشان می‌دهد
 </div>
 
-## ✅ سلول 7 — embedding گرفتن از چانک‌ها
+## ✅ سلول 5 — embedding گرفتن از چانک‌ها
 
 ```python
 EMBED_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -258,7 +258,7 @@ print('Embeddings shape:', chunk_embeddings.shape)
 </div>
 
 
-## ✅ سلول 8 — ساخت ایندکس FAISS
+## ✅ سلول 6 — ساخت ایندکس FAISS
 
 ```python
 def build_faiss_index(embeddings: np.ndarray):
@@ -293,7 +293,7 @@ print('FAISS index ready:', index is not None)
 
 
 
-## ✅ سلول 10 — بازیابی Top-k چانک‌های مرتبط
+## ✅ سلول 7 — بازیابی Top-k چانک‌های مرتبط
 
 ```python
 def retrieve_top_k(query: str, k: int = 4):
@@ -350,7 +350,7 @@ print(retrieve_top_k(test_q, k=3)[:1])
 </div>
 
 <div dir="rtl" style="text-align: right;">
-## ✅ سلول 12 — ساخت prompt برای مدل زبانی
+## ✅ سلول 8 — ساخت prompt برای مدل زبانی
 
 </div>
 
@@ -396,7 +396,7 @@ ANSWER (in Persian):
 </div>
 
 
-## ✅ سلول 14 — لود مدل تولید پاسخ + تولید پاسخ
+## ✅ سلول 9 — لود مدل تولید پاسخ + تولید پاسخ
 
 ```python
 LLM_NAME = "google/flan-t5-small"
@@ -469,15 +469,7 @@ else:
 </div>
 
 
-## ✅ سلول 16 — متن به صدا (TTS)
-
-```python
-from gtts import gTTS
-```
-
-* ایمپورت تکراری (اشکالی ندارد)
-
-
+## ✅ سلول 10 — متن به صدا (TTS)
 
 ```python
 def text_to_speech(text, out_path="answer.mp3", lang="en"):
@@ -497,12 +489,10 @@ def text_to_speech(text, out_path="answer.mp3", lang="en"):
 ```
 <div dir="rtl" style="text-align: right;">
 * با gTTS فایل mp3 می‌سازد و مسیرش را برمی‌گرداند
-
-> ⚠️ نکته: `lang="en"` است؛ اگر جواب فارسی است بهتر است `"fa"` باشد.
 </div>
 
 
-## ✅ سلول 18 — تابع اصلی RAG
+## ✅ سلول 11— تابع اصلی RAG
 
 ```python
 def rag_answer(question: str, top_k: int = 4):
@@ -531,7 +521,7 @@ def rag_answer(question: str, top_k: int = 4):
 </div>
 
 
-## ✅ سلول 20 — بازسازی pipeline + رابط Gradio
+## ✅ سلول 12 — بازسازی pipeline + رابط Gradio
 
 ### 1) بازسازی ایندکس با سند جدید
 
@@ -757,94 +747,3 @@ demo.launch(share=True, debug=True)
 * اپ را اجرا می‌کند
 * `share=True`: لینک عمومی موقت می‌دهد
 * `debug=True`: خطاها را دقیق‌تر چاپ می‌کند
-
-
-<div dir="rtl" style="text-align: right;">
-
-
-هایپرپارامترهای اصلی و تأثیرات آنها:
-1. Chunk Size (اندازه قطعات متن)
-python
-chunk_size: int = 450  # پیش‌فرض
-تأثیر:
-
-کوچک بودن: دقت بازیابی بالاتر، اما اطلاعات زمینه (context) محدودتر
-
-بزرگ بودن: اطلاعات زمینه بیشتر، اما ممکن است نویز افزایش یابد
-
-بهینه: معمولاً بین 300-600 کاراکتر برای QA مناسب است
-
-2. Overlap (هم‌پوشانی قطعات)
-python
-overlap: int = 80  # پیش‌فرض
-تأثیر:
-
-افزایش: جلوگیری از قطع شدن جملات در مرز chunkها، بهبود پیوستگی متن
-
-زیاد بودن: ذخیره‌سازی تکراری و افزایش هزینه محاسباتی
-
-بهینه: معمولاً 10-20% از chunk_size
-
-3. Top-k (تعداد قطعات بازیابی‌شده)
-python
-top_k: int = 4  # پیش‌فرض
-تأثیر:
-
-کم بودن (مثلاً 1-2): پاسخ سریع‌تر، اما ممکن است اطلاعات کافی نباشد
-
-زیاد بودن (مثلاً 8-10): اطلاعات بیشتر برای LLM، اما احتمال نویز افزایش می‌یابد
-
-بهینه: معمولاً بین 3-5 برای تعادل مناسب
-
-4. Max New Tokens (حداکثر طول پاسخ)
-python
-max_new_tokens: int = 180
-تأثیر:
-
-کم بودن: پاسخ‌های کوتاه و مختصر
-
-زیاد بودن: پاسخ‌های طولانی‌تر، اما ممکن است شامل اطلاعات نامربوط شود
-
-بهینه: برای QA معمولی 100-200 کافی است
-
-5. Num Beams (جستجوی beam در تولید)
-python
-num_beams: int = 4
-تأثیر:
-
-افزایش: کیفیت پاسخ بهتر، اما سرعت تولید کاهش می‌یابد
-
-کاهش: پاسخ سریع‌تر، اما ممکن است کیفیت افت کند
-
-بهینه: معمولاً 4-6 برای تعادل مناسب
-
-تأثیرات کلی تغییر هایپرپارامترها:
-مثبت:
-افزایش دقت: chunk_size مناسب + overlap کافی
-
-پاسخ کامل‌تر: top_k بیشتر + max_new_tokens مناسب
-
-کیفیت بهتر پاسخ: num_beams بیشتر
-
-منفی:
-کاهش سرعت: افزایش top_k، num_beams، یا کاهش chunk_size (تعداد chunk بیشتر)
-
-افزایش مصرف حافظه: chunk_size بزرگ + top_k زیاد
-
-نویز بیشتر: overlap زیاد یا top_k زیاد بدون فیلتر مناسب
-
-
-
-
-ورودی کاربر (متن سند)
-        -->
-Chunk کردن متن (تقسیم به قطعات 450 کاراکتری)
-        -->
-تبدیل به Embedding (با مدل از پیش آموزش‌دیده)
-        -->
-ذخیره در FAISS Index (دیتابیس برداری موقت در حافظه)
-        -->
-پرسش کاربر → جستجو در FAISS → بازیابی chunkهای مرتبط
-        -->
-ساخت prompt + تولید پاسخ با LLM
-</div>
